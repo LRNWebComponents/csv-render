@@ -1,0 +1,34 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`csv-render`
+A LRN element
+
+@demo demo/index.html
+-->
+
+<dom-module id="csv-render">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>[[title]]</h2>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'csv-render',
+
+      properties: {
+        title: {
+          type: String,
+          value: 'csv-render',
+        },
+      },
+
+    });
+  </script>
+</dom-module>

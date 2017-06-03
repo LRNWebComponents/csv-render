@@ -1,8 +1,10 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-spinner/paper-spinner-lite.html">
 
 <!--
 `csv-render`
-A LRN element
+ability to render csv files
 
 @demo demo/index.html
 -->
@@ -14,21 +16,112 @@ A LRN element
         display: block;
       }
     </style>
-    <h2>[[title]]</h2>
+    <iron-ajax
+      auto
+      url="{{dataSource}}"
+      handle-as="text"
+      last-response="{{tableData}}"
+      on-response="handleResponse"></iron-ajax>
+    <div id="loading">
+      <paper-spinner-lite active class="orange"></paper-spinner-lite>
+    </div>
+    <template is="dom-if" if="{{displayTest('table', displayAs)}}">
+      <table>
+      <template is="dom-repeat" items="{{tableHeadings}}" as="heading">
+        <th>{{heading}}</th>
+      </template>
+      <template is="dom-repeat" items="{{table}}" as="row">
+        <tr>
+          <template is="dom-repeat" items="{{row}}" as="col">
+          <td>{{col}}</td>
+          </template>
+        </tr>
+      </template>
+      </table>
+    </template>
   </template>
 
   <script>
     Polymer({
-
       is: 'csv-render',
-
       properties: {
-        title: {
+        /**
+         * Location of the CSV file.
+         */
+        dataSource: {
           type: String,
-          value: 'csv-render',
+          notify: true,
         },
+        /**
+         * What to display this as.
+         */
+        displayAs: {
+          type: String,
+          notify: true,
+          value: 'table',
+        },
+        /**
+         * Table busted out as an array.
+         */
+        table: {
+          type: Array,
+          notify: true,
+          value: [],
+        },
+        /**
+         * Headings from the first row of the csv
+         */
+        tableHeadings: {
+          type: Array,
+          notify: true,
+          value: [],
+        },
+        /**
+         * Raw data pulled in from the csv file.
+         */
+        tableData: {
+          type: String,
+          notify: true,
+          value: ''
+        }
       },
-
+      /**
+       * Validate if this matches
+       */
+      displayTest: function(value, test) {
+        if (value == test) {
+          return true;
+        }
+        return false;
+      },
+      /**
+       * Convert from csv text to an array in the table function
+       */
+      handleResponse: function(e) {
+        let root = this;
+        root.table = root.CSVtoArray(root.tableData);
+        root.tableHeadings = root.table.shift();
+        root.$$('#loading').innerHTML = '';
+      },
+      /**
+       * Mix of solutions from https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-comma-in-data
+       */
+      CSVtoArray: function(text) {
+        let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
+        for (l in text) {
+          l = text[l];
+          if ('"' === l) {
+            if (s && l === p) row[i] += l;
+            s = !s;
+          } else if (',' === l && s) l = row[++i] = '';
+          else if ('\n' === l && s) {
+            if ('\r' === p) row[i] = row[i].slice(0, -1);
+            row = ret[++r] = [l = '']; i = 0;
+          } else row[i] += l;
+          p = l;
+        }
+        return ret;
+      },
     });
   </script>
 </dom-module>

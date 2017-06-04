@@ -1,7 +1,11 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-spinner/paper-spinner-lite.html">
-
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../materializecss-styles/materializecss-styles.html">
 <!--
 `csv-render`
 ability to render csv files
@@ -11,10 +15,96 @@ ability to render csv files
 
 <dom-module id="csv-render">
   <template>
+    <style include="materializecss-styles-colors"></style>
     <style>
       :host {
         display: block;
       }
+      .mdl-data-table {
+        width: 100%;
+        /*position: relative;*/
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-collapse: collapse;
+        white-space: nowrap;
+        font-size: 1em;
+        background-color: rgb(255, 255, 255);
+      }
+      .mdl-data-table thead {
+        padding-bottom: 3px;
+      }
+      .mdl-data-table thead th {
+        text-align: center;
+      }
+      .mdl-data-table thead .mdl-data-table__select {
+        margin-top: 0;
+      }
+      .mdl-data-table tbody tr {
+        position: relative;
+        height: 3em;
+        -webkit-transition-duration: 0.28s;
+        transition-duration: 0.28s;
+        -webkit-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-transition-property: background-color;
+        transition-property: background-color;
+      }
+      .mdl-data-table tbody tr.is-selected {
+        background-color: #e0e0e0;
+      }
+      .mdl-data-table tbody tr:hover {
+        background-color: #eeeeee;
+      }
+      .mdl-data-table td,
+      .mdl-data-table th {
+        padding: 0 1.125em;
+        text-align: right;
+      }
+      .mdl-data-table td:first-of-type,
+      .mdl-data-table th:first-of-type {
+        padding-left: 1.5em;
+      }
+      .mdl-data-table td:last-of-type,
+      .mdl-data-table th:last-of-type {
+        padding-right: 1.5em;
+      }
+      .mdl-data-table td {
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .mdl-data-table td .mdl-data-table__select {
+        vertical-align: top;
+        position: absolute;
+        left: 1.5em;
+      }
+      .mdl-data-table th.mdl-data-table__sort {
+        color: rgba(0, 0, 0, 0.87);
+      }
+      .mdl-data-table th {
+        position: relative;
+        vertical-align: bottom;
+        text-overflow: ellipsis;
+        font-size: 1em;
+        font-weight: bold;
+        line-height: 1.5em;
+        letter-spacing: 0;
+        color: rgba(0, 0, 0, 0.54);
+        height: 3em;
+        padding-bottom: .5em;
+        box-sizing: border-box;
+      }
+      .mdl-data-table th .mdl-data-table__select {
+        position: relative;
+      }
+      .mdl-data-table__select {
+        width: 1em;
+      }
+      .mdl-data-table td.mdl-data-table__cell--non-numeric {
+        text-align: left;
+      }
+      .mdl-data-table th.mdl-data-table__cell--non-numeric {
+        text-align: left;
+      }
+
     </style>
     <iron-ajax
       auto
@@ -26,17 +116,27 @@ ability to render csv files
       <paper-spinner-lite active class="orange"></paper-spinner-lite>
     </div>
     <template is="dom-if" if="{{displayTest('table', displayAs)}}">
-      <table>
-      <template is="dom-repeat" items="{{tableHeadings}}" as="heading">
-        <th>{{heading}}</th>
-      </template>
-      <template is="dom-repeat" items="{{table}}" as="row">
+      <table class="mdl-data-table">
+      <thead>
+        <a href="{{dataSource}}" id="download">
+          <paper-icon-button icon="file-download" class="grey-text"></paper-icon-button>
+        </a>
+        <paper-tooltip for="download" animation-delay="0">Download table data</paper-tooltip>
         <tr>
-          <template is="dom-repeat" items="{{row}}" as="col">
-          <td>{{col}}</td>
-          </template>
+        <template is="dom-repeat" items="{{tableHeadings}}" as="heading">
+          <th>{{heading}}</th>
+        </template>
         </tr>
-      </template>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="{{table}}" as="row">
+          <tr>
+            <template is="dom-repeat" items="{{row}}" as="col">
+            <td>{{col}}</td>
+            </template>
+          </tr>
+        </template>
+      </tbody>
       </table>
     </template>
   </template>

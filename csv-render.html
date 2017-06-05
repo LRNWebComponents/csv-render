@@ -118,7 +118,7 @@ ability to render csv files
     <template is="dom-if" if="{{displayTest('table', displayAs)}}">
       <table class="mdl-data-table">
       <thead>
-        <a href="{{dataSource}}" id="download">
+        <a href="{{dataSource}}" id="download" tabindex="-1">
           <paper-icon-button icon="file-download" class="grey-text"></paper-icon-button>
         </a>
         <paper-tooltip for="download" animation-delay="0">Download table data</paper-tooltip>

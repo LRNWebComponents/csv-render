@@ -30,7 +30,15 @@ ability to render csv files
         background-color: rgb(255, 255, 255);
       }
       .mdl-data-table thead {
-        padding-bottom: 3px;
+        padding-bottom: .1em;
+        position: sticky;
+      }
+      .mdl-data-table caption {
+        background-color: #eee;
+        font-weight: bold;
+        padding: 0.5em;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom: none;
       }
       .mdl-data-table thead th {
         text-align: center;
@@ -116,7 +124,10 @@ ability to render csv files
       <paper-spinner-lite active class="orange"></paper-spinner-lite>
     </div>
     <template is="dom-if" if="{{displayTest('table', displayAs)}}">
-      <table class="mdl-data-table">
+      <table class="mdl-data-table" summary="{{summary}}">
+      <template is="dom-if" if="{{caption}}">
+        <caption>{{caption}}</caption>
+      </template>
       <thead>
         <a href="{{dataSource}}" id="download" tabindex="-1">
           <paper-icon-button icon="file-download" class="grey-text"></paper-icon-button>
@@ -124,7 +135,7 @@ ability to render csv files
         <paper-tooltip for="download" animation-delay="0">Download table data</paper-tooltip>
         <tr>
         <template is="dom-repeat" items="{{tableHeadings}}" as="heading">
-          <th>{{heading}}</th>
+          <th scope="col">{{heading}}</th>
         </template>
         </tr>
       </thead>
@@ -159,6 +170,22 @@ ability to render csv files
           type: String,
           notify: true,
           value: 'table',
+        },
+        /**
+         * Caption for the table to improve accessibility and readability.
+         */
+        caption: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
+        },
+        /**
+         * Summary to improve accessibility for screen readers.
+         */
+        summary: {
+          type: String,
+          notify: true,
+          reflectToAttribute: true,
         },
         /**
          * Table busted out as an array.
